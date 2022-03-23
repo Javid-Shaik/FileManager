@@ -188,6 +188,8 @@ def main():
 		elif ch==2:
 			print("To update a line enter (update)\nTo add a line before a specific line enter (add)")
 			ch_=input("Enter your choice (update/add) : ").lower()
+                        if ch_ not in ('update', 'add'):
+                                raise ValueError
 			ln=int(input(f"Enter the line number to {ch_} : "))
 			update(fn,ln,ch_)
 		elif ch==3:
@@ -230,5 +232,7 @@ try:
 		main()
 except FileNotFoundError as e:
 	print(e,"\nFile not found!")
+except ValueError:
+        print("Enter add or update\n")
 except :
 	print("Error occurred!")
