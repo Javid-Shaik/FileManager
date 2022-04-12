@@ -16,6 +16,21 @@ def files_list():
 	files=[file for file in folder]
 	print("\n",files,"\n")
 	return None
+def make_changes(fn):
+	path=os.getcwd()
+	print(path[0:19])
+	print("Current path : ",path)
+	print("Current file name : ",os.path.basename(fn))
+	print("To change the directroy enter (C)\nTo make a folder enter (M)")
+	ch_1=input("Enter your choice : ").lower()
+	if ch_1=="c":
+		dir=input("Enter the changing path : ")
+		os.chdir(path[0:19]+dir)
+	elif ch_1=="m":
+		folder=input("Enter folder name : ")
+		os.makedirs(folder)
+	else:
+		return None
 def insert(fn):
 	f1=open(fn,"w+")
 	print("Enter the text you want to insert")
@@ -103,7 +118,7 @@ def fun(fname,pdfname):
 	pdf.add_page() 
 	pdf.set_font("Times","B" ,size = 17)
 	pdf.set_margins(15,15,15)
-	pdf.set_text_color(255,0,0)
+	pdf.set_text_color(0,0,255)
 	f = open(fname, "r")
 	for x in f:
 		for y in x:
@@ -116,7 +131,7 @@ def fun(fname,pdfname):
 def help1():
 	"""Handling with files
 	Give the file name as below example.
-	file_name (or) file_name.txt\n
+	file_name.extension\n
 	--> 1. Insert
 	---------------
 	This method can be used to create a new file.\n
@@ -172,13 +187,16 @@ def help1():
 	--> 11 List of files
 	----------------
 	To know the list of files in current folder enter (11).\n
+	--> 12 Make Changes
+	----------------
+	To change the current directory or to create a folder enter (12).\n
 	"""
 	return None
 def main():
-	print("\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines\n\n>> 5.Delete File  6.Append  7.Help  8.Another File\n\n>> 9.Create Pdf  11.List of Files  0.Exit\n")
+	print("\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines\n\n>> 5.Delete File  6.Append  7.Help  8.Another File\n\n>> 9.Create Pdf  11.List of Files 12.Make Changes 0.Exit\n")
 	fn=input("Enter file name : ")
 	if len(fn[len(fn)-4:])!=4:
-		fn=fn+".html"
+		fn=fn+".txt"
 	else:
 		fn=fn
 	if len(fn)<1:
@@ -219,7 +237,7 @@ def main():
 		elif ch==8:
 			cfn=input("Enter the new file name : ")
 			if len(cfn[len(cfn)-4:])!=4:
-				fn=cfn+".html"
+				fn=cfn+".txt"
 			else:
 				fn=cfn
 		elif ch==0:
@@ -227,6 +245,8 @@ def main():
 			break
 		elif ch==11:
 			files_list()
+		elif ch==12:
+			make_changes(fn)
 try:
 	if __name__ =='__main__':
 		files_list()
@@ -236,7 +256,6 @@ try:
 except FileNotFoundError as e:
 	print(e,"\nFile not found!")
 except ValueError as e:
-	print("Please enter add or update")
-	main()
+	print("Please enter valid input")
 except :
 	print("Error occurred!")
