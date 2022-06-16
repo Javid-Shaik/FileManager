@@ -11,11 +11,17 @@ def data():
 	text="\n".join(lines)+"\n"
 	return text
 def files_list():
-	print("List of files in the current folder")
+	print("\n\t\tList of files in the current folder")
 	folder=os.listdir(".")
-	files=[file for file in folder]
-	print("\n",files,"\n")
-	return None
+	folder.sort()
+	if len(folder)==0:
+		print("folder is empty!")
+	else:
+		i=0
+		for file in folder:
+			i+=1
+			print(str(i)+".",file)
+	return folder
 def make_changes(fn):
 	path=os.getcwd()
 	print(path[0:19])
@@ -94,12 +100,42 @@ def undone(fn, del_lines):
 	f1.seek(0)
 	f1.writelines(lines)
 	f1.close()
+def Search(fn):
+	count = lc = tc = 0
+	ln =[]
+	word = input("Enter the word you want to search : ").strip()
+	f1 = open(fn,'r')
+	lines = f1.readlines()
+	for line in lines:
+		lc+=1
+		x = re.search(word, line.casefold())
+		if x :
+			count+=1
+			ln.append(lc)
+	print("The lines in which the word %s appears is : " %word,ln)
+	print("The word %s appears %d times" %(word, count))
+	if len(ln) ==0:
+		return
+	ch = input("If you want to read the lines of the word you have searched enter (y/n) : ")
+	if ch=='n':
+		return
+		f1.close()
+	#lnum = map(int,input("Enter the line nums seperated with comma (,) you want to read : ").split(","))
+	for line in lines:
+		tc+=1
+		if tc in ln:
+			print(tc,".  ",line,sep="")
+	f1.close()
 def apend(fn):
 	f1=open(fn,"a")
 	txt=data()
 	f1.write(txt)
 	f1.close()
 def file_info(fn):
+	folder = os.listdir(".")
+	if fn not in folder:
+		print("There is no file with %s name " %fn)
+		return
 	f1=open(fn,"r")
 	lines=f1.readlines()
 	print("Lines :",len(lines))
@@ -192,9 +228,12 @@ def help1():
 	To change the current directory or to create a folder enter (12).\n
 	"""
 	return None
+def menu():
+	print("\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines\n\n>> 5.Delete File  6.Append  7.Help  8.Another File\n\n>> 9.Create Pdf 10.Menu 11.List of Files \n\n>>12.Make Changes 13.Word_Search 0.Exit\n")
 def main():
-	print("\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines\n\n>> 5.Delete File  6.Append  7.Help  8.Another File\n\n>> 9.Create Pdf  11.List of Files 12.Make Changes 0.Exit\n")
+	menu()
 	fn=input("Enter file name : ")
+	folder = os.listdir(".")
 	if len(fn[len(fn)-4:])!=4:
 		fn=fn+".txt"
 	else:
@@ -204,6 +243,12 @@ def main():
 		return None
 	while True :
 		ch=int(input("Enter your choice : "))
+		if fn not in folder and ch!=1 and ch!=8:
+			print("There is no file with %s name.\nPlease enter valid filename..." %fn)
+			break
+		folder.append(fn)
+		if ch ==10:
+			menu()
 		if ch==1:
 			insert(fn)
 		elif ch==2:
@@ -245,6 +290,8 @@ def main():
 			break
 		elif ch==11:
 			files_list()
+		elif ch==13:
+			Search(fn)
 		elif ch==12:
 			make_changes(fn)
 try:
