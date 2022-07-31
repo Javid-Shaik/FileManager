@@ -1,3 +1,4 @@
+#Finding of day using date
 print("The date format should be date-month-year ex (12-02-2022)")
 mcd={1:0, 2:3, 3:3, 4:6, 5:1, 6:4, 7:6, 8:2, 9:5, 10:0, 11:3, 12:5}
 def ycd(year):
