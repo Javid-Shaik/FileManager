@@ -1,7 +1,14 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> style
 #Finding of day using date
 print("The date format should be date-month-year ex (12-02-2022)")
 mcd={1:0, 2:3, 3:3, 4:6, 5:1, 6:4, 7:6, 8:2, 9:5, 10:0, 11:3, 12:5}
 def ycd(year):
+<<<<<<< HEAD
 	if year<1600:
 		yc=0
 	elif year>=1600 and year<1700:
@@ -25,6 +32,31 @@ def leap_years(gap,year):
 		elif i%4==0 and i%100!=0:
 			leaps.append(i)
 			lc=len(leaps)
+=======
+    if year<1600:
+        yc=0
+    elif year>=1600 and year<1700:
+       yc=6
+    elif year>=1700 and year<1800:
+        yc=4
+    elif year>=1800 and year<1900:
+       yc=2
+    elif year>=1900 and year<2000:
+    	yc=0
+    elif year>=2000 and year<2100:
+    	yc=6
+    elif year>=2100 and year<2200:
+    	yc=4
+    return yc
+def leap_years(gap,year):
+	leaps=[]
+	for i in range(gap,year+1):
+	       if i%400==0 and i%100==0:
+	       	leaps.append(i)
+	       elif i%4==0 and i%100!=0:
+	       	leaps.append(i)
+	       lc=len(leaps)
+>>>>>>> style
 	return (leaps,lc)
 try:
 	date=input("Enter date : ").split("-")
@@ -70,3 +102,7 @@ for i in sday:
 	if i==day:
 		print("The day is ->",sday[i])
 		break
+<<<<<<< HEAD
+=======
+>>>>>>> ea3a0219ee7a57bce9bb8ff887003b027854ad51
+>>>>>>> style
