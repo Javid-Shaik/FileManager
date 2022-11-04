@@ -1,4 +1,4 @@
-import re,os
+import re,os,time,qrcode
 from fpdf import FPDF
 def data():
 	lines=[]
@@ -14,7 +14,8 @@ def files_list():
 	print("\n\t\tList of files in the current folder")
 	folder=os.listdir(".")
 	folder.sort()
-	if len(folder)==0:
+	n = len(folder)
+	if n==0:
 		print("folder is empty!")
 	else:
 		i=0
@@ -24,14 +25,13 @@ def files_list():
 	return folder
 def make_changes(fn):
 	path=os.getcwd()
-	print(path[0:19])
 	print("Current path : ",path)
 	print("Current file name : ",os.path.basename(fn))
 	print("To change the directroy enter (C)\nTo make a folder enter (M)")
 	ch_1=input("Enter your choice : ").lower()
 	if ch_1=="c":
 		dir=input("Enter the changing path : ")
-		os.chdir(path[0:19]+dir)
+		os.chdir(dir)
 	elif ch_1=="m":
 		folder=input("Enter folder name : ")
 		os.makedirs(folder)
@@ -43,6 +43,7 @@ def insert(fn):
 	x=data()
 	f1.write(x)
 	f1.close()
+	return None
 def display(fn):
 	f1=open(fn,"r")
 	lines=f1.readlines()
@@ -54,6 +55,7 @@ def display(fn):
 			l_num+=1
 			print(str(l_num)+". "+line.replace("\n",""))
 	f1.close()
+	return None
 def update(fn,lnum,ch_):
 	f1=open(fn,"r+")
 	lines=f1.readlines()
@@ -118,9 +120,9 @@ def Search(fn):
 		return
 	ch = input("If you want to read the lines of the word you have searched enter (y/n) : ")
 	if ch=='n':
-		return
 		f1.close()
-	#lnum = map(int,input("Enter the line nums seperated with comma (,) you want to read : ").split(","))
+		return
+	#lnum = list(map(int,input("Enter the line nums seperated with comma (,) you want to read : ").split(",")))
 	for line in lines:
 		tc+=1
 		if tc in ln:
@@ -164,6 +166,31 @@ def fun(fname,pdfname):
 		pdf.multi_cell(175,10,txt = x,border=0,fill=0,align = 'L') 
 	pdf.output(pdfname+".pdf")
 	print("Your pdf is ready check the folder")
+def desire(fn):
+	f1 = open(fn,"r+")
+	lines= f1.readlines()
+	if len(lines) ==0:
+		print("Sorry the file is Empty")
+		return None
+	while True:
+		wish = input("Do you wish to continue (yes/no) : ").lower()
+		if wish !="yes":
+			break
+		low , high = map(int,input("Enter the range seperated with (,) : ").split(","))
+		if low and high:
+			ln=0
+			for line in lines :
+				ln+=1
+				if ln >= int(low) and ln<=high:
+					time.sleep(1.25)
+					print(str(ln)+"."+line)
+def qrcodemaker():
+	#f1 = open(fn,"r")
+	#text = "".join(f1.readlines())
+	text = input("Enter text : ")
+	img = qrcode.make(text)
+	qname = input("Enter qr code name : ")
+	img.save(qname+".png")
 def help1():
 	"""Handling with files
 	Give the file name as below example.
@@ -229,23 +256,24 @@ def help1():
 	"""
 	return None
 def menu():
-	print("\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines\n\n>> 5.Delete File  6.Append  7.Help  8.Another File\n\n>> 9.Create Pdf 10.Menu 11.List of Files \n\n>>12.Make Changes 13.Word_Search 0.Exit\n")
+	print("""\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines
+	\n\n>> 5.Delete File  6.Append  7.Help  8.Another File
+	\n\n>> 9.Create Pdf 10.Menu 11.List of Files 
+	\n\n>>12.Changes Directory 13.Word_Search 15.Readlines 0.Exit
+	\n\n>>16.Make Qr code  17.Rename File\n""")
 def main():
 	menu()
+	global fn
 	fn=input("Enter file name : ")
 	folder = os.listdir(".")
-	if len(fn[len(fn)-4:])!=4:
-		fn=fn+".txt"
-	else:
-		fn=fn
-	if len(fn)<1:
-		print("Enter valid file name!")
-		return None
+	ch_ = 1
+	if fn not in folder:
+		ch_ = int(input("""The current file is not in the folder!
+		\n\tIf you want to create one then Enter 1 : """))
 	while True :
-		ch=int(input("Enter your choice : "))
-		if fn not in folder and ch!=1 and ch!=8:
-			print("There is no file with %s name.\nPlease enter valid filename..." %fn)
-			break
+		if ch_ !=1:
+			ch_=0
+		ch= ch_ if ch_ !=1 else int(input("Enter your choice : "))
 		folder.append(fn)
 		if ch ==10:
 			menu()
@@ -294,11 +322,21 @@ def main():
 			Search(fn)
 		elif ch==12:
 			make_changes(fn)
+		elif ch==15:
+			desire(fn)
+		elif ch==16:
+			qrcodemaker()
+			print("Your qr code has been generated")
+		elif ch==17:
+			fn1 = input("New file Name : ")
+			os.rename(fn,fn1)
+			print("Renamed sucessfully")
+			fn = fn1
 try:
 	if __name__ =='__main__':
 		files_list()
-		print("Please first provide the file name you want to handle")
-		print("To get help and information. Enter 7\n")
+		print("\n    Please first provide the file name you want to handle")
+		print("\n\tTo get help and information. Enter 7\n")
 		main()
 except FileNotFoundError as e:
 	print(e,"\nFile not found!")
