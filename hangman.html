@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+ <html lang="en">
+    <head>
+  <title>Hang Man</title>
+   <style type="text/css" rel="stylesheet">
+     .h {
+         margin-top:50px;
+         width:5px;
+         height:350px;
+         background-color:grey;
+         position:relative;
+         top:50px;
+         left:100px;
+     }
+     .a {
+            background-color:grey;
+            height:5px;
+            width:400px;
+            margin-left:100px;
+            margin-top:50px;
+            postion:absolute;
+            left:100px;
+     }
+     #box {
+    width: 35%;
+    height: 400px;
+    background-color: yellow; /* white */
+    border: 1px solid green; /* black */
+    padding: 10px;
+    }
+
+     .hand {
+             width:50px;
+             height:30px;
+             color:green;
+             background-color:black;
+      }
+     .c {
+           border-radius:50px;
+           width:40px;
+           height:40px;
+     }
+     button {
+        background-color:cyan;
+        border-color: tomato;
+        animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+        }
+      }
+     </style>
+      <script>
+      window.onload = function() {
+            useValue("");
+            var buttons = document.getElementsByClassName("c");
+            var butValues = []
+            for(var i=0;i<=buttons.length;i++)
+            {
+                buttons[i].addEventListener("click",function fun() {
+                butValues.push(this.value);
+                useValue(this.value)
+                });
+            }
+      }
+    let list = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
+    let randomIndex = Math.floor(Math.random() * list.length);
+    let word = list[randomIndex].toLowerCase();
+    let word_display = Array(word.length).fill("_");
+    let used_letters = new Set();
+    function useValue(val) {
+    var b = document.getElementById("bars");
+    b.innerHTML = word_display.join(" ");
+    val = val.toLowerCase();
+    var flag=true;
+    if (!used_letters.has(val)) {
+        used_letters.add(val);
+        for (let i = 0; i < word.length; i++) {
+            if (word[i] === val) {
+                word_display[i] = val;
+                var sound = new Audio();
+                sound.src = "luffy.mp3";
+                sound.play();
+                flag=false;
+            }
+        }
+        if(flag) 
+        {
+             var sound = new Audio();
+             sound.src = "katakuri.mp3";
+             sound.play();
+        }
+        b.innerHTML = word_display.join(" ");
+    }
+    else
+    {
+         var sound = new Audio();
+         sound.src = "haki.mp3";
+         sound.play();
+    }
+}
+    document.getElementsByClassName("c").addEventListener("click",function() {
+    document.getElementById("box").style.backgroundColor="blue";
+    });
+   </script>
+  </head>
+  <body bgcolor="pink">
+    <div class="a"></div>
+    <div class="h"></div>
+    <center>
+     <p style="font-size:100px" id="bars"></p>
+     <div class="butt">
+     <section >
+       <button class="c" value="A">A</button>
+       <button class="c" value="B">B</button>
+       <button class="c" value="C">C</button>
+       <button class="c" value="D">D</button>
+       <button class="c" value="E">E</button>
+       <button class="c" value="F">F</button>
+       <button class="c" value="G">G</button>
+       <button class="c" value="H">H</button>
+       <button class="c" value="I">I</button>
+       <button class="c" value="J">J</button>
+       <button class="c" value="K">K</button>
+     </section><br>
+     <section>
+       <button class="c" value="L">L</button>
+       <button class="c" value="M">M</button>
+       <button class="c" value="N">N</button>
+       <button class="c" value="O">O</button>
+       <button class="c" value="P">P</button>
+       <button class="c" value="Q">Q</button>
+       <button class="c" value="R">R</button>
+       <button class="c" value="S">S</button>
+       <button class="c" value="T">T</button>
+       <button class="c" value="U">U</button>
+       <button class="c" value="V">V</button>
+       <button class="c" value="W">W</button>
+       <button class="c" value="X">X</button>
+       <button class="c" value="Y">Y</button>
+       <button class="c" value="Z">Z</button>
+      </section>
+      </div>
+     </center>
+   </body>
+ </html>
+ </html>
