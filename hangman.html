@@ -6,6 +6,13 @@
   <title>Hang Man</title>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
    <style type="text/css" rel="stylesheet">
+     #score {
+          float:right;
+          font-size:20px;
+          font-style:sans-serif;
+          font-weight:bold;
+          margin:10px;
+     }
      .c {
            border-radius:50px;
            width:40px;
@@ -23,37 +30,55 @@
         50% { transform: scale(1.1); }
         100% { transform: scale(1); }
         }
+       canvas {
+           width:300px;
+           height:400px;
+           background-color:black;
+           position:relative;
+           top:30px;
+           left:60px;
+       }
      </style>
       <script>
-      window.onload = function() {
-            useValue("");
+      var ch=-1;
+      var lc = 0;
+      var win_cnt=0;
+      var wc = 0;
+
+      window.onload = function fun() {
+         if(typeof(Storage)!=="undefined")
+         {
+            useValue("",0);
             var buttons = document.getElementsByClassName("c");
             var butValues = []
             for(var i=0;i<=buttons.length;i++)
             {
                 buttons[i].addEventListener("click",function fun() {
                 butValues.push(this.value);
-                useValue(this.value)
+                useValue(this.value);
                 });
             }
+         }
+         else alert("Sorry browser does not support local storage!");
       }
-    let list = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
+    let list = ["Apple", "Banana", "Cherry", "Date", "Elderberry","Mango","Grapes","WaterMelon","Papaya","Guava"];
     let randomIndex = Math.floor(Math.random() * list.length);
     let word = list[randomIndex].toLowerCase();
     let word_display = Array(word.length).fill("_");
     let used_letters = new Set();
-    var word_count = 0;
+    
     function useValue(val) {
     var b = document.getElementById("bars");
     b.innerHTML = word_display.join(" ");
     var n = val;
+    var wlen = word.length;
     val = val.toLowerCase();
     var flag = true;
     if (!used_letters.has(val)) {
         used_letters.add(val);
-        for (let i = 0; i < word.length; i++) {
+        for (let i = 0; i < wlen && ch<7; i++) {
             if (word[i] === val) {
-              word_count++;
+              lc++;
               $(document).ready(function() {
                 $("#"+n).css({'background-color':"whitesmoke",color:"green",border:"1px solid green"});
               });
@@ -61,37 +86,125 @@
               word_display[i] = val;
             }
         }
-        if(flag)
+        if(flag && ch<7)
         {
           $(document).ready(function() {
-            $("#"+n).css({'background-color':"whitesmoke",color:"red",border:"1px solid red"});
+          $("#"+n).css({'background-color':"whitesmoke",color:"red",border:"1px solid red"});
           });
           var sound = new Audio();
           sound.src = "https://github.com/Javid-Shaik/Hello-world/blob/Hangman-Game/right.wav?raw=true";
           sound.play();
+          var canvas = document.getElementById("mycanvas");
+          var ctx = canvas.getContext("2d");
+          ctx.strokeStyle = "cyan";
+          switch(ch)
+          {
+             case 0: ctx.moveTo(0,140);
+             ctx.lineTo(50,140);
+             ctx.stroke();
+             break;
+             case 1 : ctx.moveTo(10,10);
+             ctx.lineTo(20,140);
+             ctx.stroke();
+             ctx.stroke();
+             break;
+             case 2 :ctx.moveTo(10,10);
+             ctx.lineTo(200,10);
+             ctx.stroke();
+             ctx.stroke();
+             break;
+             case 3:
+             ctx.moveTo(60,10);
+             ctx.lineTo(12,28);
+             ctx.stroke();
+             ctx.stroke();
+             break;
+             case 4:
+             ctx.moveTo(200,10)
+             ctx.lineTo(200,50);
+             ctx.stroke();
+             break;
+             case 5:
+             ctx.beginPath();
+             ctx.arc(200,70,20,0,2*Math.PI); //head
+             ctx.stroke();
+             ctx.beginPath();
+             ctx.arc(190,65,2,0,2*Math.PI); // left eye
+             ctx.stroke();
+             ctx.beginPath();
+             ctx.arc(207,65,2,0,2*Math.PI); // right eye
+             ctx.stroke();
+             ctx.beginPath();
+             ctx.moveTo(193,75);
+             ctx.quadraticCurveTo(205,70,209,76);//smile 193 65 203 55 197 85 207 75
+             ctx.stroke();
+             ctx.stroke();
+             break;
+             case 6:
+             ctx.beginPath();
+             ctx.moveTo(200,90);
+             ctx.lineTo(200,100);  //upper body
+             ctx.stroke();
+             ctx.lineTo(185,107);  //left arm
+             ctx.stroke();
+             ctx.moveTo(200,100);
+             ctx.lineTo(215,107);  //right arm
+             ctx.stroke();
+             ctx.moveTo(200,100);
+             ctx.lineTo(200,120);  //lower body
+             ctx.stroke();
+             ctx.lineTo(185,127); //left leg
+             ctx.stroke();
+             ctx.moveTo(200,120);
+             ctx.lineTo(215,127); // right leg
+             ctx.stroke();
+             default :break;
+           }
+           ch++;
         }
-        else {
+        else if(!flag) {
           var sound = new Audio();
-              sound.src = "https://github.com/Javid-Shaik/Hello-world/blob/Hangman-Game/correct.mp3?raw=true";
-              sound.play();
+          sound.src = "https://github.com/Javid-Shaik/Hello-world/blob/Hangman-Game/correct.mp3?raw=true";
+          sound.play();
+        }
+        if(ch>=7)
+        {
+           wc++;
+           localStorage.setItem("wc",wc);
+           wc = parseInt(localStorage.getItem("wc")) || 0;
+           document.getElementById("score").innerHTML = wc;
+           $(document).ready(function() {
+             $("#score").html("<span>"+win_cnt+"/"+wc+"</span>");
+          });
+         setTimeout(function() { location.reload();},2000);
+        }
+        if(lc==wlen)
+        {
+          win_cnt++;
+          wc++;
+          localStorage.setItem("wc",wc);
+          wc = parseInt(localStorage.getItem("wc")) || 0;
+          document.getElementById("score").innerHTML = wc;
+          $(document).ready(function() {
+             $("#score").html("<span>"+win_cnt+"/"+wc+"</span>");
+          });
+          setTimeout(function() { location.reload();},2000);
         }
         b.innerHTML = word_display.join(" ");
     }
     else 
     {
-      alert("Already used!");
+      alert("already used!");
     }
-}
-    document.getElementsByClassName("c").addEventListener("click",function() {
-    document.getElementById("box").style.backgroundColor="blue";
-    });
+    }
    </script>
   </head>
-  <body bgcolor="white">
-   <div class="h"></div>
+  <body bgcolor="pink">
+   <div id="score"></div>
+     <canvas id="mycanvas">You browser does not supports canvas</canvas>
     <center>
      <p style="font-size:50px" id="bars"></p>
-     <div class="butt">
+     <div class="hang">
      <section >
        <button id = "A" class="c" value="A">A</button>
        <button id = "B" class="c" value="B">B</button>
