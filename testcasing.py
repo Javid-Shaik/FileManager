@@ -1,5 +1,7 @@
-import re,os,time,qrcode
+import re,os,time,shutil, PyPDF2
 from fpdf import FPDF
+from tqdm import tqdm
+
 def data():
 	lines=[]
 	while True:
@@ -10,6 +12,7 @@ def data():
 			break
 	text="\n".join(lines)+"\n"
 	return text
+
 def files_list():
 	print("\n\t\tList of files in the current folder")
 	folder=os.listdir(".")
@@ -23,20 +26,24 @@ def files_list():
 			i+=1
 			print(str(i)+".",file)
 	return folder
+
 def make_changes(fn):
 	path=os.getcwd()
 	print("Current path : ",path)
 	print("Current file name : ",os.path.basename(fn))
-	print("To change the directroy enter (C)\nTo make a folder enter (M)")
-	ch_1=input("Enter your choice : ").lower()
-	if ch_1=="c":
-		dir=input("Enter the changing path : ")
-		os.chdir(dir)
-	elif ch_1=="m":
-		folder=input("Enter folder name : ")
-		os.makedirs(folder)
+	dir =input("Enter the path preceeding with cd : ").lower()
+	if dir[0]=="c":
+		if dir[3]!=".":
+			os.chdir("".join(dir[3:]))
+		else :
+			p="".join(path[:path.rfind("/")])
+			print(p)
+			os.chdir(p)
+	elif dir[0]=="m":
+		os.makedirs("".join(dir[5:]))
 	else:
 		return None
+
 def insert(fn):
 	f1=open(fn,"w+")
 	print("Enter the text you want to insert")
@@ -44,6 +51,7 @@ def insert(fn):
 	f1.write(x)
 	f1.close()
 	return None
+
 def display(fn):
 	f1=open(fn,"r")
 	lines=f1.readlines()
@@ -56,6 +64,7 @@ def display(fn):
 			print(str(l_num)+". "+line.replace("\n",""))
 	f1.close()
 	return None
+
 def update(fn,lnum,ch_):
 	f1=open(fn,"r+")
 	lines=f1.readlines()
@@ -76,6 +85,7 @@ def update(fn,lnum,ch_):
 		f1.close()
 	else:
 		print("File is Empty!\n")
+
 def Delete(fn,*ln):
 	f1=open(fn,"r+")
 	lines=f1.readlines()
@@ -91,6 +101,7 @@ def Delete(fn,*ln):
 			del_lines.update({lnum:i})
 	f1.close()
 	return del_lines
+
 def undone(fn, del_lines):
 	f1=open(fn,"r+")
 	lines=f1.readlines()
@@ -102,6 +113,7 @@ def undone(fn, del_lines):
 	f1.seek(0)
 	f1.writelines(lines)
 	f1.close()
+
 def Search(fn):
 	count = lc = tc = 0
 	ln =[]
@@ -128,11 +140,14 @@ def Search(fn):
 		if tc in ln:
 			print(tc,".  ",line,sep="")
 	f1.close()
+	return tc
+
 def apend(fn):
 	f1=open(fn,"a")
 	txt=data()
 	f1.write(txt)
 	f1.close()
+
 def file_info(fn):
 	folder = os.listdir(".")
 	if fn not in folder:
@@ -151,10 +166,11 @@ def file_info(fn):
 		wc+=x
 	print("words =",wc)
 	print("characters =",cc)
+
 def fun(fname,pdfname):
 	pdf= FPDF('P',"mm",'A4')
 	pdf.add_page() 
-	pdf.set_font("Times","B" ,size = 17)
+	pdf.set_font("Times","B" ,size = 15)
 	pdf.set_margins(15,15,15)
 	pdf.set_text_color(0,0,255)
 	f = open(fname, "r")
@@ -166,31 +182,77 @@ def fun(fname,pdfname):
 		pdf.multi_cell(175,10,txt = x,border=0,fill=0,align = 'L') 
 	pdf.output(pdfname+".pdf")
 	print("Your pdf is ready check the folder")
+
 def desire(fn):
 	f1 = open(fn,"r+")
 	lines= f1.readlines()
+	wish = "yes"
 	if len(lines) ==0:
 		print("Sorry the file is Empty")
 		return None
+	low , high = map(int,input("Enter the range seperated with (,) : ").split(","))
 	while True:
-		wish = input("Do you wish to continue (yes/no) : ").lower()
 		if wish !="yes":
-			break
-		low , high = map(int,input("Enter the range seperated with (,) : ").split(","))
+			return None
+		if low>len(lines):
+		    return None
 		if low and high:
 			ln=0
 			for line in lines :
 				ln+=1
 				if ln >= int(low) and ln<=high:
 					time.sleep(1.25)
-					print(str(ln)+"."+line)
-def qrcodemaker():
-	#f1 = open(fn,"r")
-	#text = "".join(f1.readlines())
-	text = input("Enter text : ")
-	img = qrcode.make(text)
-	qname = input("Enter qr code name : ")
-	img.save(qname+".png")
+					print(str(ln)+".  "+line)
+		wish = input("Do you wish to continue (yes/no) : ").lower()
+		low = high
+		high +=10
+
+def merge_files(fileNames):
+    new = input("Enter the new file name : ")
+    mix = open(new,'w+')
+    for fn in fileNames:
+        file = open(fn,'r+')
+        lines=file.readlines()
+        mix.writelines(lines)
+        file.close()
+    mix.close()
+    return mix
+
+def copyFile(fn):
+	cfn = input("Enter the file name you want to make the copy : ")
+	shutil.copyfile(fn,cfn)
+	return cfn
+
+def DeleteFiles(fileNames,folder):
+	for del_fn in fileNames:
+		if del_fn not in folder:
+			print("File _",del_fn,"_ does not Exists!")
+			continue
+		print("File _",del_fn,"_ has been Deleted!")
+		dch = input("If you want to Undo the Deletion Enter (Y/N) : ").lower()
+		if dch == 'y':
+			print("File _",del_fn,"_ has been Recovered")
+		else :
+			os.remove(del_fn)
+			folder.remove(del_fn)
+	return folder
+
+def extractText(folder):
+	pdf = input("Enter PDF File name : ")
+	#txt = input("Enter the text file name to store : ")
+	pdf_file = open(pdf+".pdf", "rb")
+	pdf_reader = PyPDF2.PdfReader(pdf_file)
+	n = len(pdf_reader.pages)
+	text = ""
+	for page in tqdm(range(n)):
+		text += pdf_reader.pages[page].extract_text()
+	text_file = open(pdf+".txt", "w")
+	text_file.write(text)
+	text_file.close()
+	pdf_file.close()
+	folder.append(pdf+".txt")
+	print("Text Extracted Successfully!\nFile has been created. Check in the folder by entering 11")
+
 def help1():
 	"""Handling with files
 	Give the file name as below example.
@@ -229,9 +291,9 @@ def help1():
 	To delete multiple lines.
 	Enter the line number(s) seperated with comma (,) to delete.
 	If you want to undo the deletion enter (Y/N).\n
-	--> 5 Delete File
+	--> 5 Delete File(s)
 	---------------
-	To delete a file enter the file name.\n
+	To delete file(s) enter the file name(s) seperated with space.\n
 	-->6 Append 
 	-------------
 	To add the text at the end of the file enter (6).\n
@@ -255,52 +317,70 @@ def help1():
 	To change the current directory or to create a folder enter (12).\n
 	"""
 	return None
+
 def menu():
 	print("""\t\t\tMenu\n>> 1.Insert  2.(Update/Add) 3.Display  4.Delete lines
-	\n\n>> 5.Delete File  6.Append  7.Help  8.Another File
-	\n\n>> 9.Create Pdf 10.Menu 11.List of Files 
-	\n\n>>12.Changes Directory 13.Word_Search 15.Readlines 0.Exit
-	\n\n>>16.Make Qr code  17.Rename File\n""")
+	\n\n>> 5.Delete File(s)  6.Append  7.Help  8.Another File
+	\n\n>> 9.Create Pdf  10.Menu  11.List of Files
+	\n\n>> 12.Changes Directory  13.Word_Search  14.Readlines
+	\n\n>> 15.Rename File  16.Merge Files  17.Copy Files 
+	\n\n>> 18.Extract Pdf  0.Exit\n""")
+
 def main():
 	menu()
 	global fn
 	fn=input("Enter file name : ")
 	folder = os.listdir(".")
-	ch_ = 1
-	if fn not in folder:
-		ch_ = int(input("""The current file is not in the folder!
-		\n\tIf you want to create one then Enter 1 : """))
+	if len(fn)<1:
+	    print("You must provide a valid file name")
+	    return
 	while True :
-		if ch_ !=1:
-			ch_=0
-		ch= ch_ if ch_ !=1 else int(input("Enter your choice : "))
-		folder.append(fn)
+		ch = int(input("Enter your choice : "))
 		if ch ==10:
 			menu()
 		if ch==1:
 			insert(fn)
+			folder.append(fn)
 		elif ch==2:
-			print("To update a line enter (update)\nTo add a line before a specific line enter (add)")
-			ch_=input("Enter your choice (update/add) : ").lower()
-			if ch_ not in ('add','update'):
-				raise ValueError
-			ln=int(input(f"Enter the line number to {ch_} : "))
-			update(fn,ln,ch_)
+			if fn in folder:
+				f1 = open(fn,'r')
+				lines = len(f1.readlines())
+				print("To update a line enter (update)\nTo add a line before a specific line enter (add)")
+				ch_=input("Enter your choice (update/add) : ").lower()
+				if ch_ not in ('add','update'):
+					raise ValueError
+				ln=int(input(f"Enter the line number to {ch_} : "))
+				if ln>lines:
+					print("Line number exceeded!")
+				else:
+					update(fn,ln,ch_)
+			else :
+				print("No such file or directory!")
 		elif ch==3:
-			display(fn)
+			try :
+				display(fn)
+			except Exception as e:
+				print(e,"File Not Found!")
+				continue
 		elif ch==4:
+			if fn not in folder:
+				print("No such File or Directory!")
+				continue
 			ln=tuple(map(int,input("Enter line number(s) seperated with comma to delete : ").split(",")))
 			del_lines=Delete(fn,*ln)
 			undo=input("If you want undo the deletion enter (Y/N) : ")
 			if undo.lower()=="y":
 				undone(fn,del_lines)
 		elif ch==5:
-			fn1=input("Enter the file name you want to delete : ")
-			os.remove(fn1)
-			print("File is delted !")
+			fileNames = map(str,input("Enter file name(s) seperated with space: ").split())
+			folder = DeleteFiles(fileNames,folder)
 		elif ch==7:
 			print(help1.__doc__)
-			file_info(fn)
+			try:
+				file_info(fn)
+			except Exception as e:
+				print(e)
+				continue
 		elif ch==6:
 			print("Enter the data to append")
 			apend(fn)
@@ -310,7 +390,7 @@ def main():
 		elif ch==8:
 			cfn=input("Enter the new file name : ")
 			if len(cfn[len(cfn)-4:])!=4:
-				fn=cfn+".txt"
+				fn=cfn
 			else:
 				fn=cfn
 		elif ch==0:
@@ -321,17 +401,40 @@ def main():
 		elif ch==13:
 			Search(fn)
 		elif ch==12:
-			make_changes(fn)
-		elif ch==15:
+			try :
+				make_changes(fn)
+			except Exception as e:
+				print(e)
+				continue
+		elif ch==14:
 			desire(fn)
-		elif ch==16:
-			qrcodemaker()
-			print("Your qr code has been generated")
-		elif ch==17:
-			fn1 = input("New file Name : ")
-			os.rename(fn,fn1)
+		elif ch==15:
+			print("Current File Name is : ",os.path.basename(fn))
+			new_fn = input("New file Name : ")
+			if new_fn==fn:
+			    print("Renamed successfully")
+			    continue
+			if new_fn in folder:
+			    print("The file",new_fn,"is already exists.\nDot you still want to Rename?")
+			    rch = input("Enter (Y/N) : ").lower()
+			    if rch=="n":
+			        continue
+			os.rename(fn,new_fn)
 			print("Renamed sucessfully")
-			fn = fn1
+			folder.remove(fn)
+			fn = new_fn
+			folder.append(fn)
+		elif ch==16:
+		    fileNames= input("Enter file names seperated with space : ").split()
+		    merge_files(fileNames)
+		    print("Files merged sucessfully! Check in the folder")
+		elif ch==17:
+			cfn = copyFile(fn)
+			print("Copied content into",cfn,"successfully!")
+		elif ch==18:
+			extractText(folder)
+	return ch
+
 try:
 	if __name__ =='__main__':
 		files_list()
@@ -342,5 +445,5 @@ except FileNotFoundError as e:
 	print(e,"\nFile not found!")
 except ValueError as e:
 	print("Please enter valid input")
-except :
-	print("Error occurred!")
+#except :
+#	print("Error occurred!")
