@@ -257,6 +257,7 @@ def help1():
 	"""Handling with files
 	Give the file name as below example.
 	file_name.extension\n
+	_________________
 	--> 1. Insert
 	---------------
 	This method can be used to create a new file.\n
@@ -277,44 +278,65 @@ def help1():
 	---------------\n
 	NOTE : Give the input text as in the above example.
 	Whenever you are giving the input text.\n
+	_________________
 	--> 2 Line manipulation [update/add]
-	------------------------------------
 	To update a specific line enter (update) or to add enter (add)
 	Then enter the line number you want to manipulate.\n
 	After that enter data like in above example.\n
+	_________________
 	--> 3 Display
-	-------------
 	To display the file content enter -> (3)\n
+	_________________
 	--> 4 Delete Line(s)
-	-------------------
 	To delete one line enter that line number.\n
 	To delete multiple lines.
 	Enter the line number(s) seperated with comma (,) to delete.
 	If you want to undo the deletion enter (Y/N).\n
+	_________________
 	--> 5 Delete File(s)
-	---------------
 	To delete file(s) enter the file name(s) seperated with space.\n
-	-->6 Append 
-	-------------
+	_________________
+	--> 6 Append 
 	To add the text at the end of the file enter (6).\n
+	_________________
 	--> 7 Help & Information
-	-------------------------
 	To get help and information enter (7).\n
+	_________________
 	--> 8 Open or Create another file
-	--------------    --------------
 	To open or create an another file enter (8).\n
+	_________________
 	--> 9 PDF CREATION
-	--------------------
 	To convert the text file into pdf enter (9).\n
+	_________________
 	--> 0 EXIT 
-	------------
 	To exit from the program enter (0).\n
+	_________________
 	--> 11 List of files
-	----------------
 	To know the list of files in current folder enter (11).\n
+	_________________
 	--> 12 Make Changes
-	----------------
 	To change the current directory or to create a folder enter (12).\n
+	To change the directory enter the path preceeding with cd Ex: cd /changing/path
+	To create a directory enter the directory preceeding with mkdir Ex : mkdir /directory
+	_________________
+	--> 13 Word Search
+	To search a word in the present text file enter 13 and then enter the word.
+	_________________
+	--> 14 Readlines
+	This function allows you to read the lines in a certain range.
+	_________________
+	--> 15 Rename File
+	To rename file this function can be used.
+	_________________
+	--> 16 Merge Files
+	This function will create a new text file by appending the text from the multiple files.
+	_________________
+	--> 17 Copy Files
+	To copy the contents form a file to another file this function can be used.
+	_________________
+	--> 18 Extract Pdf
+	This function will extract the text from the pdf and creats a text file.
+	_________________
 	"""
 	return None
 
@@ -445,5 +467,5 @@ except FileNotFoundError as e:
 	print(e,"\nFile not found!")
 except ValueError as e:
 	print("Please enter valid input")
-#except :
-#	print("Error occurred!")
+except :
+	print("Error occurred!")
